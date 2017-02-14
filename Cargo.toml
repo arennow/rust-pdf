@@ -1,13 +1,12 @@
 [package]
 name = "pdf"
-version = "0.5.0"
+version = "0.5.2"
 authors = ["Simon Sapin <simon.sapin@exyr.org>",
 	   "Rasmus Kaj <rasmus@krats.se>"]
 license = "MIT"
 description = """
-Generate PDF files in pure Rust.
-Currently, simple vector graphics and text set in the 14 built-in \
-fonts are supported."""
+This crate is now pdf-canvas.
+Other code will appear under this name."""
 documentation = "https://docs.rs/pdf"
 repository = "https://github.com/kaj/rust-pdf"
 readme = "README.md"

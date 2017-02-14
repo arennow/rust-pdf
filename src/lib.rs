@@ -1,49 +1,15 @@
 //! A library for creating pdf files.
 //!
-//! Currently, simple vector graphics and text set in the 14 built-in
-//! fonts are supported.
-//! The main entry point of the crate is the [struct Pdf](struct.Pdf.html),
-//! representing a PDF file being written.
-
-//! # Example
-//!
-//! ```
-//! use pdf::{Pdf, BuiltinFont, FontSource};
-//! use pdf::graphicsstate::Color;
-//!
-//! let mut document = Pdf::create("example.pdf")
-//!     .expect("Create pdf file");
-//! // The 14 builtin fonts are available
-//! let font = BuiltinFont::Times_Roman;
-//!
-//! // Add a page to the document.  This page will be 180 by 240 pt large.
-//! document.render_page(180.0, 240.0, |canvas| {
-//!     // This closure defines the content of the page
-//!     let hello = "Hello World!";
-//!     let w = font.get_width(24.0, hello) + 8.0;
-//!
-//!     // Some simple graphics
-//!     try!(canvas.set_stroke_color(Color::rgb(0, 0, 248)));
-//!     try!(canvas.rectangle(90.0 - w / 2.0, 194.0, w, 26.0));
-//!     try!(canvas.stroke());
-//!
-//!     // Some text
-//!     canvas.center_text(90.0, 200.0, font, 24.0, hello)
-//! }).expect("Write page");
-//! // Write all pending content, including the trailer and index
-//! document.finish().expect("Finish pdf document");
-//! ```
-//!
-//! To use this library you need to add it as a dependency in your
-//! `Cargo.toml`:
+//! This crate is now known as pdf-canvas.
 //!
 //! ```toml
 //! [dependencies]
-//! pdf = "*"
+//! pdf-canvas = "*"
 //! ```
 //!
-//! Some more working usage examples exists in [the examples directory]
-//! (https://github.com/kaj/rust-pdf/tree/master/examples).
+//! The crate name pdf will soon be used by another crate, amied at
+//! reading, modifying _and_ writing pdf data, as opposed to the crate now
+//! known as pdf-canvas, wich is only for creating pdf files.
 #![deny(missing_docs)]
 
 #[macro_use]

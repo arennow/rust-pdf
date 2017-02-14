@@ -1,19 +1,11 @@
-# rust-pdf
-A pure rust library for generating PDF files.
-Currently, simple vector graphics and text set in the 14 built-in
-fonts are supported.
+# pdf-canvas
 
-[![Build Status](https://travis-ci.org/kaj/rust-pdf.svg?branch=master)](https://travis-ci.org/kaj/rust-pdf)
-[![Crate](https://meritbadge.herokuapp.com/pdf)](https://crates.io/crates/pdf)
-
-To use this library, add it as a dependency in your `Cargo.toml`:
+This crate is now known as
+[pdf-canvas](https://crates.io/crates/pdf-canvas).
 
     [dependencies]
-    pdf = "*"
+    pdf-canvas = "*"
 
-The API is still very alpha, usage may change.
-Some examples, that should work with the version containing them, can
-be found in the [examples](examples) directory.
-Read the [API documentation for the pdf crate](https://docs.rs/pdf).
-A larger example of a program using this crate is [chord3, a chopro
-formatter](https://github.com/kaj/chord3).
+The crate name pdf will soon be used by another crate, amied at
+reading, modifying _and_ writing pdf data, as opposed to the crate now
+known as pdf-canvas, wich is only for creating pdf files.
