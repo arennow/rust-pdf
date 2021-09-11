@@ -4,7 +4,7 @@ use encoding::{
 use fontmetrics::{get_builtin_metrics, FontMetrics};
 use std::cmp::Eq;
 use std::hash::Hash;
-use std::io::{self, Write};
+use std::io::{self, Write, Seek};
 use Pdf;
 
 /// The "Base14" built-in fonts in PDF.
@@ -38,7 +38,7 @@ pub trait FontSource: PartialEq + Eq + Hash {
     ///
     /// This is called automatically for each font used in a document.
     /// There should be no need to call this method from user code.
-    fn write_object(&self, pdf: &mut Pdf) -> io::Result<usize>;
+    fn write_object<Output: Write+Seek>(&self, pdf: &mut Pdf<Output>) -> io::Result<usize>;
 
     /// Get the PDF name of this font.
     ///
@@ -80,7 +80,7 @@ pub trait FontSource: PartialEq + Eq + Hash {
 }
 
 impl FontSource for BuiltinFont {
-    fn write_object(&self, pdf: &mut Pdf) -> io::Result<usize> {
+    fn write_object<Output: Write+Seek>(&self, pdf: &mut Pdf<Output>) -> io::Result<usize> {
         // Note: This is enough for a Base14 font, other fonts will
         // require a stream for the actual font, and probably another
         // object for metrics etc

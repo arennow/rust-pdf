@@ -87,8 +87,8 @@ pub use textobject::TextObject;
 /// are appended with the `render_page` method.
 /// Don't forget to call `finish` when done, to write the document
 /// trailer, without it the written file won't be a proper PDF.
-pub struct Pdf {
-    output: File,
+pub struct Pdf<Output: Write+Seek> {
+    output: Output,
     object_offsets: Vec<i64>,
     page_objects_ids: Vec<usize>,
     all_font_object_ids: HashMap<BuiltinFont, usize>,
@@ -99,15 +99,17 @@ pub struct Pdf {
 const ROOT_OBJECT_ID: usize = 1;
 const PAGES_OBJECT_ID: usize = 2;
 
-impl Pdf {
+impl Pdf<File> {
     /// Create a new PDF document as a new file with given filename.
-    pub fn create<P: AsRef<Path>>(filename: P) -> io::Result<Pdf> {
+    pub fn create<P: AsRef<Path>>(filename: P) -> io::Result<Self> {
         let file = File::create(filename)?;
         Pdf::new(file)
     }
+}
 
+impl<Output: Write+Seek> Pdf<Output> {
     /// Create a new PDF document, writing to `output`.
-    pub fn new(mut output: File) -> io::Result<Pdf> {
+    pub fn new(mut output: Output) -> io::Result<Self> {
         // TODO Maybe use a lower version?  Possibly decide by features used?
         output.write_all(b"%PDF-1.7\n%\xB5\xED\xAE\xFB\n")?;
         Ok(Pdf {
@@ -257,7 +259,7 @@ impl Pdf {
 
     fn write_new_object<F, T>(&mut self, write_content: F) -> io::Result<T>
     where
-        F: FnOnce(usize, &mut Pdf) -> io::Result<T>,
+        F: FnOnce(usize, &mut Self) -> io::Result<T>,
     {
         let id = self.object_offsets.len();
         let (result, offset) =
@@ -272,7 +274,7 @@ impl Pdf {
         write_content: F,
     ) -> io::Result<T>
     where
-        F: FnOnce(&mut Pdf) -> io::Result<T>,
+        F: FnOnce(&mut Self) -> io::Result<T>,
     {
         assert!(self.object_offsets[id] == -1);
         let (result, offset) = self.write_object(id, write_content)?;
@@ -286,7 +288,7 @@ impl Pdf {
         write_content: F,
     ) -> io::Result<(T, i64)>
     where
-        F: FnOnce(&mut Pdf) -> io::Result<T>,
+        F: FnOnce(&mut Self) -> io::Result<T>,
     {
         // `as i64` here would overflow for PDF files bigger than 2**63 bytes
         let offset = self.tell()? as i64;
@@ -299,7 +301,7 @@ impl Pdf {
     /// Write out the document trailer.
     /// The trailer consists of the pages object, the root object,
     /// the xref list, the trailer object and the startxref position.
-    pub fn finish(mut self) -> io::Result<()> {
+    pub fn finish(mut self) -> io::Result<Output> {
         self.write_object_with_id(PAGES_OBJECT_ID, |pdf| {
             write!(
                 pdf.output,
@@ -383,7 +385,9 @@ impl Pdf {
              {}\n\
              %%EOF",
             startxref,
-        )
+        )?;
+
+		Ok(self.output)
     }
 
     fn write_outlines(&mut self) -> io::Result<Option<usize>> {
