@@ -55,6 +55,7 @@ use std::collections::{BTreeMap, HashMap};
 use std::fmt;
 use std::fs::File;
 use std::io::{self, Seek, SeekFrom, Write};
+use std::path::Path;
 
 mod fontsource;
 pub use fontsource::{BuiltinFont, FontSource};
@@ -100,7 +101,7 @@ const PAGES_OBJECT_ID: usize = 2;
 
 impl Pdf {
     /// Create a new PDF document as a new file with given filename.
-    pub fn create(filename: &str) -> io::Result<Pdf> {
+    pub fn create<P: AsRef<Path>>(filename: P) -> io::Result<Pdf> {
         let file = File::create(filename)?;
         Pdf::new(file)
     }
